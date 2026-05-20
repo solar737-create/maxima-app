@@ -119,8 +119,7 @@ const CATALOG_DATA = [
       {"article": "VZG-3X2.5-M", "name": "Кабель ВВГ-Пнг(А)-LS 3х2.5 плоский ГОСТ (Казэнергокабель)", "location": "Силовые линии розеток; Бухта 100м + метраж", "qty": 150, "price": 680, "link": ""},
       {"article": "VZG-3X1.5-M", "name": "Кабель ВВГ-Пнг(А)-LS 3х1.5 плоский ГОСТ (Казэнергокабель)", "location": "Линии освещения; Магазин Электрокомплект", "qty": 100, "price": 440, "link": ""},
       {"article": "GOFRA-20-M", "name": "Гофра ПВХ d=20мм с протяжкой (серая, негорючая)", "location": "Прокладка по потолку для силовых кабелей", "qty": 100, "price": 110, "link": ""},
-      {"article": "PODROZ-68", "name": "Подрозетник Schneider Electric IMT35100 для сплошных стен (65х45)", "location": "В кирпичные и штробленные стены под вмазку", "qty": 35, "price": 220, "link": ""
-      }
+      {"article": "PODROZ-68", "name": "Подрозетник Schneider Electric IMT35100 для сплошных стен (65х45)", "location": "В кирпичные и штробленные стены под вмазку", "qty": 35, "price": 220, "link": ""}
     ]
   },
   {
@@ -147,7 +146,7 @@ const CATALOG_DATA = [
     "category": "bathroom_san",
     "items": [
       {"article": "GROHE-RAPID-SL", "name": "Grohe Rapid SL — Инсталляция для подвесного унитаза 3 в 1 (с кнопкой)", "location": "Встроенный санузел; Магазин Сантехника24 / Сулпак", "qty": 1, "price": 94500, "link": ""},
-      {"article": "GROHE-BAU-EDGE", "name": "Grohe BauEdge — Смеситель для ванны с душевым гарнитуром", "location": "Стена над ванной", "qty": 1, "price": 48000, "link": ""},
+      {"article": "GROHE-BAU-EDGE", "name": "Grohe BauEdge — Смеситель для ванны with душевым гарнитуром", "location": "Стена над ванной", "qty": 1, "price": 48000, "link": ""},
       {"article": "SHWT-DRAIN-60", "name": "Alcaplast APZ10-600M — Душевой лоток с решеткой под плитку (60 см)", "location": "Зона душевого подиума (в строительном исполнении)", "qty": 1, "price": 38200, "link": ""}
     ]
   },
@@ -178,7 +177,7 @@ const CATALOG_DATA = [
     "category": "bathroom_room",
     "items": [
       {"article": "111.153.00.1", "name": "Geberit UP100 — рамная инсталляция для подвесного унитаза", "location": "Найдено на Kaspi за 110 670 ₸", "qty": 1, "price": 110670, "link": ""},
-      {"article": "204060000", "name": "Geberit iCon — подвесовой унитаз безободковый, белый", "location": "Уточнить цену у официального дилера Geberit", "qty": 1, "price": 98000, "link": ""},
+      {"article": "204060000", "name": "Geberit iCon — подвесной унитаз безободковый, белый", "location": "Уточнить цену у официального дилера Geberit", "qty": 1, "price": 98000, "link": ""},
       {"article": "Sigma/Delta", "name": "Geberit — кнопка смыва (панель) для UP100", "location": "Подобрать хром или белый", "qty": 1, "price": 19600, "link": ""},
       {"article": "29232000", "name": "Hansgrohe 1jet S — гигиенический душ со смесителем, держателем и шлангом 125 см, хром", "location": "Рядом с унитазом; Заказ на Kaspi Магазине", "qty": 1, "price": 42500, "link": ""}
     ]
@@ -258,6 +257,18 @@ function updateStats() {
   document.getElementById('stat-sum').textContent = fmt(runningSum);
 }
 
+function tryNextExtension(imgEl, art, step) {
+  // GitHub Pages is case-sensitive, so we test multiple common patterns
+  const extensions = ['./item_photos/' + art + '.jpg', './item_photos/' + art + '.png', './item_photos/' + art + '.jpeg', './item_photos/' + art + '.JPG'];
+  if (step < extensions.length) {
+    imgEl.src = extensions[step];
+    imgEl.onerror = function() { tryNextExtension(imgEl, art, step + 1); };
+  } else {
+    imgEl.style.display = 'none';
+    imgEl.nextElementSibling.style.display = 'flex';
+  }
+}
+
 function renderList(filter) {
   activeFilter = filter;
   const container = document.getElementById('list-container');
@@ -280,16 +291,6 @@ function renderList(filter) {
       itemEl.className = `item ${isDone ? 'done' : ''}`;
       itemEl.id = `item-${item.article}`;
 
-      // Автоматический путь к фото на GitHub по артикулу товара
-      const imgUrl = `item_photos/${item.article}.jpg`;
-
-      let imgHtml = `
-        <div class="img-container">
-          <img src="${imgUrl}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" alt="">
-          <div class="img-placeholder" style="display:none;">🏠</div>
-        </div>
-      `;
-
       let linkHtml = '';
       if (item.link) {
         linkHtml = `<a href="${item.link}" target="_blank" class="link-btn">🔗 Ссылка на товар</a>`;
@@ -304,7 +305,12 @@ function renderList(filter) {
             <div class="item-art">${item.article}</div>
             <div class="item-name" onclick="toggleDetails('${item.article}')">${item.name}</div>
             <div class="item-loc">📍 ${item.location || 'По месту'}</div>
-            ${imgHtml}
+            
+            <div class="img-container">
+              <img id="img-${item.article}" alt="" src="">
+              <div class="img-placeholder" style="display:none;">🏠</div>
+            </div>
+
             ${linkHtml}
             <div class="det-trigger" onclick="toggleDetails('${item.article}')">
               <span>Параметры и заметки</span> <span class="chev" id="chv-${item.article}">▼</span>
@@ -336,6 +342,10 @@ function renderList(filter) {
         </div>
       `;
       container.appendChild(itemEl);
+      
+      // Start testing file extension paths safely relative to the directory path
+      const targetImg = document.getElementById(`img-${item.article}`);
+      tryNextExtension(targetImg, item.article, 0);
     });
   });
   updateStats();
