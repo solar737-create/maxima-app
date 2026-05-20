@@ -258,25 +258,26 @@ function updateStats() {
 }
 
 function tryNextExtension(imgEl, art, step) {
-  // Uses clean absolute-relative paths combined with random strings to completely kill the browser cache lock
-  const base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+  const repoName = '/maxima-app'; // Your exact GitHub repository subfolder
   const cacheBuster = '?v=' + Math.random().toString(36).substring(2, 7);
   
   const extensions = [
-    base + '/item_photos/' + art + '.jpg',
-    base + '/item_photos/' + art.toLowerCase() + '.jpg',
-    base + '/item_photos/' + art + '.png',
-    base + '/item_photos/' + art.toLowerCase() + '.png',
-    base + '/item_photos/' + art + '.JPG',
-    base + '/item_photos/' + art + '.jpeg'
+    repoName + '/item_photos/' + art + '.png',
+    repoName + '/item_photos/' + art.toLowerCase() + '.jpg',
+    repoName + '/item_photos/' + art.toLowerCase() + '.png',
+    repoName + '/item_photos/' + art + '.JPG',
+    repoName + '/item_photos/' + art + '.jpeg'
   ];
 
   if (step < extensions.length) {
     imgEl.src = extensions[step] + cacheBuster;
     imgEl.onerror = function() { tryNextExtension(imgEl, art, step + 1); };
   } else {
+    // If absolutely nothing hits, show the fallback placeholder icon cleanly
     imgEl.style.display = 'none';
     imgEl.nextElementSibling.style.display = 'flex';
+  }
+}
   }
 }
 
@@ -308,49 +309,50 @@ function renderList(filter) {
       }
 
       itemEl.innerHTML = `
-        <div class="item-main">
-          <div class="chk-wrapper">
-            <div class="chk" onclick="toggleDone('${item.article}')"></div>
-          </div>
-          <div class="item-info">
-            <div class="item-art">${item.article}</div>
-            <div class="item-name" onclick="toggleDetails('${item.article}')">${item.name}</div>
-            <div class="item-loc">📍 ${item.location || 'По месту'}</div>
-            
-            <div class="img-container">
-              <img id="img-${item.article}" alt="" src="">
-              <div class="img-placeholder" style="display:none;">🏠</div>
-            </div>
+  <div class="item-main">
+    <div class="chk-wrapper">
+      <div class="chk" onclick="toggleDone('${item.article}')"></div>
+    </div>
+    <div class="item-info">
+      <div class="item-art">${item.article}</div>
+      <div class="item-name" onclick="toggleDetails('${item.article}')">${item.name}</div>
+      <div class="item-loc">📍 ${item.location || 'По месту'}</div>
+      
+      <div class="img-container">
+        <img id="img-${item.article}" alt="" src="./item_photos/${item.article}.jpg" onerror="this.onerror=null; tryNextExtension(this, '${item.article}', 0);">
+        <div class="img-placeholder" style="display:none;">🏠</div>
+      </div>
 
-            ${linkHtml}
-            <div class="det-trigger" onclick="toggleDetails('${item.article}')">
-              <span>Параметры и заметки</span> <span class="chev" id="chv-${item.article}">▼</span>
-            </div>
-            <div class="details" id="det-${item.article}">
-              <div class="det-row">
-                <span class="det-lbl">Редактировать цену (за ед.):</span>
-                <div class="price-input-group">
-                  <input type="number" class="price-input" id="inp-${item.article}" value="${curPrice}" oninput="livePrice('${item.article}', this.value, ${item.qty})" onblur="updatePrice('${item.article}', this.value)">
-                  <button class="btn-reset" onclick="resetPrice('${item.article}', ${item.price})">Сброс</button>
-                </div>
-              </div>
-              <div class="det-row">
-                <span class="det-lbl">Заметка / Место закупки:</span>
-                <textarea class="note-area" rows="2" onblur="setNote('${item.article}', this.value)">${note}</textarea>
-              </div>
-              <div class="det-val" style="margin-top:4px; font-size:12px; font-weight:700; color:var(--primary);" id="ptot-${item.article}">
-                Итого: ${fmt(curPrice * item.qty)} за ${item.qty}
-              </div>
-            </div>
+      ${linkHtml}
+      <div class="det-trigger" onclick="toggleDetails('${item.article}')">
+        <span>Параметры и заметки</span> <span class="chev" id="chv-${item.article}">▼</span>
+      </div>
+      <div class="details" id="det-${item.article}">
+        <div class="det-row">
+          <span class="det-lbl">Редактировать цену (за ед.):</span>
+          <div class="price-input-group">
+            <input type="number" class="price-input" id="inp-${item.article}" value="${curPrice}" oninput="livePrice('${item.article}', this.value, ${item.qty})" onblur="updatePrice('${item.article}', this.value)">
+            <button class="btn-reset" onclick="resetPrice('${item.article}', ${item.price})">Сброс</button>
           </div>
         </div>
-        <div class="item-meta">
-          <div class="item-qty">Кол-во: ${item.qty}</div>
-          <div class="price-tag">
-            <div class="price-main" id="dtot-${item.article}">${fmt(curPrice * item.qty)}</div>
-            <div class="price-unit">${fmt(curPrice)} / ед.</div>
-          </div>
+        <div class="det-row">
+          <span class="det-lbl">Заметка / Место закупки:</span>
+          <textarea class="note-area" rows="2" onblur="setNote('${item.article}', this.value)">${note}</textarea>
         </div>
+        <div class="det-val" style="margin-top:4px; font-size:12px; font-weight:700; color:var(--primary);" id="ptot-${item.article}">
+          Итого: ${fmt(curPrice * item.qty)} за ${item.qty}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="item-meta">
+    <div class="item-qty">Кол-во: ${item.qty}</div>
+    <div class="price-tag">
+      <div class="price-main" id="dtot-${item.article}">${fmt(curPrice * item.qty)}</div>
+      <div class="price-unit">${fmt(curPrice)} / ед.</div>
+    </div>
+  </div>
+`;
       `;
       container.appendChild(itemEl);
       
