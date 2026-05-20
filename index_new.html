@@ -560,11 +560,19 @@ function updateStats() {
 function tryNextExtension(imgEl, art, step) {
   const cacheBuster = '?v=' + Math.random().toString(36).substring(2, 7);
   
+  // Calculate relative paths vs absolute fallback paths dynamically
+  const path = window.location.pathname;
+  const directory = path.substring(0, path.lastIndexOf('/'));
+  const baseRepoUrl = window.location.origin + directory + '/item_photos/';
+
   const extensions = [
     'item_photos/' + art + '.png',
     'item_photos/' + art + '.jpg',
+    baseRepoUrl + art + '.png',
+    baseRepoUrl + art + '.jpg',
     'item_photos/' + art.toLowerCase() + '.png',
     'item_photos/' + art.toLowerCase() + '.jpg',
+    baseRepoUrl + art.toLowerCase() + '.png',
     'item_photos/' + art + '.JPG',
     'item_photos/' + art + '.PNG',
     'item_photos/' + art + '.jpeg'
