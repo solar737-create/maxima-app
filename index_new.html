@@ -26,4 +26,105 @@ body{font-family:-apple-system,Inter,sans-serif;background:var(--bg);color:var(-
 .list{padding:0 16px 20px}
 .sec-hdr{font-size:14px;font-weight:700;color:var(--primary);margin:24px 0 12px;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:6px}
 .item{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);border:1px solid transparent;transition:all 0.2s;position:relative;overflow:hidden}
-.item.done{background:var(--done-bg);border-color:rgba(46
+.item.done{background:var(--done-bg);border-color:rgba(46,139,111,0.15)}
+.item-main{display:flex;gap:12px;align-items:flex-start}
+.chk-wrapper{padding-top:2px}
+.chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;background:#fff}
+.item.done .chk{background:var(--green);border-color:var(--green)}
+.item.done .chk::after{content:'✓';color:#fff;font-size:14px;font-weight:700}
+.item-info{flex:1;min-width:0}
+.item-art{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.5px;margin-bottom:2px}
+.item-name{font-size:15px;font-weight:600;line-height:1.3;margin-bottom:4px;cursor:pointer}
+.item.done .item-name{text-decoration:line-through;color:var(--muted)}
+.item-loc{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;margin-bottom:6px}
+.item-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+.item-qty{font-size:13px;font-weight:600;color:var(--muted);background:var(--bg);padding:3px 8px;border-radius:6px}
+.item.done .item-qty{background:rgba(0,0,0,0.03)}
+.price-tag{text-align:right}
+.price-main{font-size:15px;font-weight:700;color:var(--text)}
+.price-unit{font-size:11px;color:var(--muted);margin-top:1px}
+.det-trigger{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--primary);margin-top:8px;cursor:pointer;width:fit-content}
+.det-trigger .chev{transition:transform 0.2s;font-size:10px}
+.details{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:13px}
+.details.open{display:block}
+.det-row{margin-bottom:8px;display:flex;flex-direction:column;gap:4px}
+.det-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px}
+.det-val{font-weight:500}
+.price-input-group{display:flex;gap:6px;align-items:center;margin-top:4px}
+.price-input{width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;font-family:inherit}
+.price-input:focus{outline:none;border-color:var(--primary)}
+.btn-reset{background:none;border:none;color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;padding:4px}
+.note-area{width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;font-size:13px;resize:none;font-family:inherit;margin-top:4px}
+.note-area:focus{outline:none;border-color:var(--primary)}
+.img-container{margin-top:10px;border-radius:10px;overflow:hidden;background:var(--bg);border:1px solid var(--border);position:relative;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
+.img-container img{width:100%;height:100%;object-fit:cover}
+.img-placeholder{color:var(--muted);font-size:24px}
+.link-btn{display:inline-flex;align-items:center;gap:4px;background:var(--bg);color:var(--primary);padding:6px 12px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;margin-top:6px;border:1px solid var(--border)}
+#updateBanner{position:fixed;bottom:16px;left:16px;right:16px;background:var(--accent);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 4px 15px rgba(224,92,42,0.3);z-index:1000;display:none;font-size:13px;font-weight:600;text-align:center;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>Maxima — Список покупок</h1>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-box">
+    <div class="stat-lbl">Куплено / Всего</div>
+    <div class="stat-val" id="stat-progress">0 / 0</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-lbl">Итого потрачено</div>
+    <div class="stat-val" id="stat-sum">0 ₸</div>
+  </div>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-filter="all">Все группы</div>
+  <div class="tab" data-filter="electrical">⚡ Электрика</div>
+  <div class="tab" data-filter="boxes">🔌 Трассировка</div>
+  <div class="tab" data-filter="plumbing_iso">❄️ Изоляция</div>
+  <div class="tab" data-filter="kitchen">🍳 Кухня</div>
+  <div class="tab" data-filter="bathroom_san">🛁 Сантехника</div>
+  <div class="tab" data-filter="pipes">📐 Трубы и Коллекторы</div>
+  <div class="tab" data-filter="mounting">🛠️ Каркас</div>
+  <div class="tab" data-filter="bathroom_room">🚿 Санузел</div>
+</div>
+
+<div class="list" id="list-container"></div>
+
+<div id="updateBanner">Доступно обновление — нажмите для применения</div>
+
+<script>
+const CATALOG_DATA = [
+  {
+    "section": "⚡  ЭЛЕКТРИКА — Schneider Electric Sedna (Бежевый)",
+    "category": "electrical",
+    "items": [
+      {"article": "SDD112101", "name": "Одноклавишный выключатель 10АХ 250В, без рамки, бежевый", "location": "Балкон; 3-кл. сборка в ванной; 3-кл. сборка внутри ванной", "qty": 3, "price": 2450, "link": "https://kaspi.kz/shop/p/schneider-electric-sedna-sdd112101-belyi-110034444/"},
+      {"article": "SDD112106", "name": "Двухклавишный проходной выключатель 10АХ 250В, без рамки, бежевый", "location": "Входной коридор; коридор у кухни", "qty": 2, "price": 2695, "link": ""},
+      {"article": "SDD112105", "name": "Двухклавишный выключатель 10АХ 250В, без рамки, бежевый", "location": "Кухня (освещение над столом и рабочей зоной)", "qty": 1, "price": 2720, "link": ""},
+      {"article": "SDD112221", "name": "Розетка одинарная со шторками и заземлением 16А, без рамки, бежевый", "location": "По всей квартире (комнаты, коридор, кухня)", "qty": 24, "price": 2340, "link": ""},
+      {"article": "SDD112221W", "name": "Розетка влагозащищенная с крышкой и шторками IP44 16А, без рамки, бежевый", "location": "Ванная комната (стиральная машина, зеркало, фен)", "qty": 3, "price": 3150, "link": ""},
+      {"article": "SDD112902", "name": "Рамка 2-постовая универсальная (горизонтальная/вертикальная), бежевый", "location": "Спальня у кровати, коридор, кухня рабочая зона", "qty": 5, "price": 980, "link": ""},
+      {"article": "SDD112903", "name": "Рамка 3-постовая универсальная, бежевый", "location": "Входная группа, ТВ зона, кухня фартук", "qty": 4, "price": 1450, "link": ""},
+      {"article": "SDD112904", "name": "Рамка 4-постовая универсальная, бежевый", "location": "ТВ-зона в гостиной", "qty": 1, "price": 2100, "link": ""}
+    ]
+  },
+  {
+    "section": "🔌  КАБЕЛЬ И ПРОВОДКА — Материалы трассировки",
+    "category": "boxes",
+    "items": [
+      {"article": "VZG-3X2.5-M", "name": "Кабель ВВГ-Пнг(А)-LS 3х2.5 плоский ГОСТ (Казэнергокабель)", "location": "Силовые линии розеток; Бухта 100м + метраж", "qty": 150, "price": 680, "link": ""},
+      {"article": "VZG-3X1.5-M", "name": "Кабель ВВГ-Пнг(А)-LS 3х1.5 плоский ГОСТ (Казэнергокабель)", "location": "Линии освещения; Магазин Электрокомплект", "qty": 100, "price": 440, "link": ""},
+      {"article": "GOFRA-20-M", "name": "Гофра ПВХ d=20мм с протяжкой (серая, негорючая)", "location": "Прокладка по потолку для силовых кабелей", "qty": 100, "price": 110, "link": ""},
+      {"article": "PODROZ-68", "name": "Подрозетник Schneider Electric IMT35100 для сплошных стен (65х45)", "location": "В кирпичные и штробленные стены под вмазку", "qty": 35, "price": 220, "link": ""}
+    ]
+  },
+  {
+    "section": "❄️  САНТЕХНИКА — Теплоизоляция и защита труб",
+    "category": "plumbing_iso",
+    "items": [
+      {"article": "ISO-18-9", "name": "Трубная изоляция Энергофлекс Супер 18/9 (серый вспененный полиэтилен)", "location": "Трубы ГВС/ХВС 16мм и REHAU стабилизировано", "qty": 10, "price": 280, "link": ""},
+      {"
