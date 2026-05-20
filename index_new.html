@@ -477,7 +477,7 @@ const CATALOG_DATA = [
     "category": "bathroom_room",
     "items": [
       {"article": "111.153.00.1", "name": "Geberit UP100 — рамная инсталляция для подвесного унитаза", "location": "Найдено на Kaspi за 110 670 ₸", "qty": 1, "price": 110670, "link": ""},
-      {"article": "204060000", "name": "Geberit iCon — подвесовой унитаз безободковый, белый", "location": "Уточнить цену у официального дилера Geberit", "qty": 1, "price": 98000, "link": ""},
+      {"article": "204060000", "name": "Geberit iCon — подвесной унитаз безободковый, белый", "location": "Уточнить цену у официального дилера Geberit", "qty": 1, "price": 98000, "link": ""},
       {"article": "Sigma/Delta", "name": "Geberit — кнопка смыва (панель) для UP100", "location": "Подобрать хром или белый", "qty": 1, "price": 19600, "link": ""},
       {"article": "29232000", "name": "Hansgrohe 1jet S — гигиенический душ со смесителем, держателем и шлангом 125 см, хром", "location": "Рядом с унитазом; Заказ на Kaspi Магазине", "qty": 1, "price": 42500, "link": ""}
     ]
@@ -558,24 +558,30 @@ function updateStats() {
 }
 
 function tryNextExtension(imgEl, art, step) {
-  const base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
   const cacheBuster = '?v=' + Math.random().toString(36).substring(2, 7);
   
   const extensions = [
-    base + '/item_photos/' + art + '.png',
-    base + '/item_photos/' + art + '.jpg',
-    base + '/item_photos/' + art.toLowerCase() + '.png',
-    base + '/item_photos/' + art.toLowerCase() + '.jpg',
-    base + '/item_photos/' + art + '.JPG',
-    base + '/item_photos/' + art + '.jpeg'
+    'item_photos/' + art + '.png',
+    'item_photos/' + art + '.jpg',
+    'item_photos/' + art.toLowerCase() + '.png',
+    'item_photos/' + art.toLowerCase() + '.jpg',
+    'item_photos/' + art + '.JPG',
+    'item_photos/' + art + '.PNG',
+    'item_photos/' + art + '.jpeg'
   ];
 
   if (step < extensions.length) {
+    imgEl.onload = function() {
+      imgEl.style.display = 'block';
+      if (imgEl.nextElementSibling) imgEl.nextElementSibling.style.display = 'none';
+    };
     imgEl.src = extensions[step] + cacheBuster;
-    imgEl.onerror = function() { tryNextExtension(imgEl, art, step + 1); };
+    imgEl.onerror = function() { 
+      tryNextExtension(imgEl, art, step + 1); 
+    };
   } else {
     imgEl.style.display = 'none';
-    imgEl.nextElementSibling.style.display = 'flex';
+    if (imgEl.nextElementSibling) imgEl.nextElementSibling.style.display = 'flex';
   }
 }
 
@@ -617,7 +623,7 @@ function renderList(filter) {
             <div class="item-loc">📍 ${item.location || 'По месту'}</div>
             
             <div class="img-container">
-              <img id="img-${item.article}" alt="" src="./item_photos/${item.article}.png" onerror="tryNextExtension(this, '${item.article}', 0);">
+              <img id="img-${item.article}" alt="" src="item_photos/${item.article}.png" onerror="tryNextExtension(this, '${item.article}', 1);">
               <div class="img-placeholder" style="display:none;">🏠</div>
             </div>
 
