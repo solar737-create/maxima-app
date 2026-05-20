@@ -119,7 +119,7 @@ const CATALOG_DATA = [
       {"article": "VZG-3X2.5-M", "name": "Кабель ВВГ-Пнг(А)-LS 3х2.5 плоский ГОСТ (Казэнергокабель)", "location": "Силовые линии розеток; Бухта 100м + метраж", "qty": 150, "price": 680, "link": ""},
       {"article": "VZG-3X1.5-M", "name": "Кабель ВВГ-Пнг(А)-LS 3х1.5 плоский ГОСТ (Казэнергокабель)", "location": "Линии освещения; Магазин Электрокомплект", "qty": 100, "price": 440, "link": ""},
       {"article": "GOFRA-20-M", "name": "Гофра ПВХ d=20мм с протяжкой (серая, негорючая)", "location": "Прокладка по потолку для силовых кабелей", "qty": 100, "price": 110, "link": ""},
-      {"article": "PODROZ-68", "name": "Подрозетник Schneider Electric IMT35100 для сплошных стен (65х45)", "location": "В кирпичные и штробленные стены под вмазку", "qty": 35, "price": 220, "link": ""}
+      {"article": "PODROЗ-68", "name": "Подрозетник Schneider Electric IMT35100 для сплошных стен (65х45)", "location": "В кирпичные и штробленные стены под вмазку", "qty": 35, "price": 220, "link": ""}
     ]
   },
   {
@@ -146,7 +146,7 @@ const CATALOG_DATA = [
     "category": "bathroom_san",
     "items": [
       {"article": "GROHE-RAPID-SL", "name": "Grohe Rapid SL — Инсталляция для подвесного унитаза 3 в 1 (с кнопкой)", "location": "Встроенный санузел; Магазин Сантехника24 / Сулпак", "qty": 1, "price": 94500, "link": ""},
-      {"article": "GROHE-BAU-EDGE", "name": "Grohe BauEdge — Смеситель для ванны with душевым гарнитуром", "location": "Стена над ванной", "qty": 1, "price": 48000, "link": ""},
+      {"article": "GROHE-BAU-EDGE", "name": "Grohe BauEdge — Смеситель для ванны с душевым гарнитуром", "location": "Стена над ванной", "qty": 1, "price": 48000, "link": ""},
       {"article": "SHWT-DRAIN-60", "name": "Alcaplast APZ10-600M — Душевой лоток с решеткой под плитку (60 см)", "location": "Зона душевого подиума (в строительном исполнении)", "qty": 1, "price": 38200, "link": ""}
     ]
   },
@@ -258,10 +258,21 @@ function updateStats() {
 }
 
 function tryNextExtension(imgEl, art, step) {
-  // GitHub Pages is case-sensitive, so we test multiple common patterns
-  const extensions = ['./item_photos/' + art + '.jpg', './item_photos/' + art + '.png', './item_photos/' + art + '.jpeg', './item_photos/' + art + '.JPG'];
+  // Uses clean absolute-relative paths combined with random strings to completely kill the browser cache lock
+  const base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+  const cacheBuster = '?v=' + Math.random().toString(36).substring(2, 7);
+  
+  const extensions = [
+    base + '/item_photos/' + art + '.jpg',
+    base + '/item_photos/' + art.toLowerCase() + '.jpg',
+    base + '/item_photos/' + art + '.png',
+    base + '/item_photos/' + art.toLowerCase() + '.png',
+    base + '/item_photos/' + art + '.JPG',
+    base + '/item_photos/' + art + '.jpeg'
+  ];
+
   if (step < extensions.length) {
-    imgEl.src = extensions[step];
+    imgEl.src = extensions[step] + cacheBuster;
     imgEl.onerror = function() { tryNextExtension(imgEl, art, step + 1); };
   } else {
     imgEl.style.display = 'none';
@@ -343,7 +354,6 @@ function renderList(filter) {
       `;
       container.appendChild(itemEl);
       
-      // Start testing file extension paths safely relative to the directory path
       const targetImg = document.getElementById(`img-${item.article}`);
       tryNextExtension(targetImg, item.article, 0);
     });
