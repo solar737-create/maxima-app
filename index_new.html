@@ -10,57 +10,357 @@
 <link rel="manifest" href="manifest.json">
 <title>Maxima — Список покупок</title>
 <style>
-:root{--bg:#F5F3EF;--card:#FFF;--primary:#1A3C5E;--accent:#E05C2A;--green:#2E8B6F;--text:#1C1C1C;--muted:#888;--border:#E0DDD7;--done-bg:#F0FAF5;--shadow:0 2px 12px rgba(0,0,0,0.07);--r:14px}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,Inter,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px}
-.hdr{background:var(--primary);color:#fff;padding:env(safe-area-inset-top,20px) 16px 16px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);text-align:center}
-.hdr h1{font-size:20px;font-weight:700;letter-spacing:-0.5px}
-.stats-bar{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px;background:var(--card);border-bottom:1px solid var(--border);font-size:13px}
-.stat-box{background:var(--bg);padding:10px;border-radius:10px}
-.stat-lbl{color:var(--muted);margin-bottom:2px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
-.stat-val{font-size:16px;font-weight:700;color:var(--primary)}
-.tabs{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;background:var(--bg);white-space:nowrap;-webkit-overflow-scrolling:touch}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:8px 16px;background:var(--card);border:1px solid var(--border);border-radius:20px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all 0.2s}
-.tab.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 10px rgba(26,60,94,0.2)}
-.list{padding:0 16px 20px}
-.sec-hdr{font-size:14px;font-weight:700;color:var(--primary);margin:24px 0 12px;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:6px}
-.item{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);border:1px solid transparent;transition:all 0.2s;position:relative;overflow:hidden}
-.item.done{background:var(--done-bg);border-color:rgba(46,139,111,0.15)}
-.item-main{display:flex;gap:12px;align-items:flex-start}
-.chk-wrapper{padding-top:2px}
-.chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;background:#fff}
-.item.done .chk{background:var(--green);border-color:var(--green)}
-.item.done .chk::after{content:'✓';color:#fff;font-size:14px;font-weight:700}
-.item-info{flex:1;min-width:0}
-.item-art{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.5px;margin-bottom:2px}
-.item-name{font-size:15px;font-weight:600;line-height:1.3;margin-bottom:4px;cursor:pointer}
-.item.done .item-name{text-decoration:line-through;color:var(--muted)}
-.item-loc{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;margin-bottom:6px}
-.item-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
-.item-qty{font-size:13px;font-weight:600;color:var(--muted);background:var(--bg);padding:3px 8px;border-radius:6px}
-.item.done .item-qty{background:rgba(0,0,0,0.03)}
-.price-tag{text-align:right}
-.price-main{font-size:15px;font-weight:700;color:var(--text)}
-.price-unit{font-size:11px;color:var(--muted);margin-top:1px}
-.det-trigger{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--primary);margin-top:8px;cursor:pointer;width:fit-content}
-.det-trigger .chev{transition:transform 0.2s;font-size:10px}
-.details{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:13px}
-.details.open{display:block}
-.det-row{margin-bottom:8px;display:flex;flex-direction:column;gap:4px}
-.det-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px}
-.det-val{font-weight:500}
-.price-input-group{display:flex;gap:6px;align-items:center;margin-top:4px}
-.price-input{width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;font-family:inherit}
-.price-input:focus{outline:none;border-color:var(--primary)}
-.btn-reset{background:none;border:none;color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;padding:4px}
-.note-area{width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;font-size:13px;resize:none;font-family:inherit;margin-top:4px}
-.note-area:focus{outline:none;border-color:var(--primary)}
-.img-container{margin-top:10px;border-radius:10px;overflow:hidden;background:var(--bg);border:1px solid var(--border);position:relative;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
-.img-container img{width:100%;height:100%;object-fit:cover}
-.img-placeholder{color:var(--muted);font-size:24px}
-.link-btn{display:inline-flex;align-items:center;gap:4px;background:var(--bg);color:var(--primary);padding:6px 12px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;margin-top:6px;border:1px solid var(--border)}
-#updateBanner{position:fixed;bottom:16px;left:16px;right:16px;background:var(--accent);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 4px 15px rgba(224,92,42,0.3);z-index:1000;display:none;font-size:13px;font-weight:600;text-align:center;cursor:pointer}
+:root {
+  --bg: #F5F3EF;
+  --card: #FFF;
+  --primary: #1A3C5E;
+  --accent: #E05C2A;
+  --green: #2E8B6F;
+  --text: #1C1C1C;
+  --muted: #888;
+  --border: #E0DDD7;
+  --done-bg: #F0FAF5;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --r: 14px;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  font-family: -apple-system, Inter, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 90px;
+}
+.hdr {
+  background: var(--primary);
+  color: #fff;
+  padding: env(safe-area-inset-top, 20px) 16px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.hdr h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.stats-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.stat-box {
+  background: var(--bg);
+  padding: 10px;
+  border-radius: 10px;
+}
+.stat-lbl {
+  color: var(--muted);
+  margin-bottom: 2px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.stat-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  background: var(--bg);
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+.tab {
+  padding: 8px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 10px rgba(26,60,94,0.2);
+}
+.list {
+  padding: 0 16px 20px;
+}
+.sec-hdr {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 24px 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.item {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.item.done {
+  background: var(--done-bg);
+  border-color: rgba(46,139,111,0.15);
+}
+.item-main {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.chk-wrapper {
+  padding-top: 2px;
+}
+.chk {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fff;
+}
+.item.done .chk {
+  background: var(--green);
+  border-color: var(--green);
+}
+.item.done .chk::after {
+  content: '✓';
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+.item-art {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+.item-name {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.item.done .item-name {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.item-loc {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.item-qty {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.item.done .item-qty {
+  background: rgba(0,0,0,0.03);
+}
+.price-tag {
+  text-align: right;
+}
+.price-main {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.price-unit {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.det-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-top: 8px;
+  cursor: pointer;
+  width: fit-content;
+}
+.det-trigger .chev {
+  transition: transform 0.2s;
+  font-size: 10px;
+}
+.details {
+  display: none;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.details.open {
+  display: block;
+}
+.det-row {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.det-lbl {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.det-val {
+  font-weight: 500;
+}
+.price-input-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 4px;
+}
+.price-input {
+  width: 90px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+}
+.price-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.btn-reset {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+}
+.note-area {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  resize: none;
+  font-family: inherit;
+  margin-top: 4px;
+}
+.note-area:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.img-container {
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  position: relative;
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.img-placeholder {
+  color: var(--muted);
+  font-size: 24px;
+}
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg);
+  color: var(--primary);
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 6px;
+  border: 1px solid var(--border);
+}
+#updateBanner {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(224,92,42,0.3);
+  z-index: 1000;
+  display: none;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -177,7 +477,7 @@ const CATALOG_DATA = [
     "category": "bathroom_room",
     "items": [
       {"article": "111.153.00.1", "name": "Geberit UP100 — рамная инсталляция для подвесного унитаза", "location": "Найдено на Kaspi за 110 670 ₸", "qty": 1, "price": 110670, "link": ""},
-      {"article": "204060000", "name": "Geberit iCon — подвесной унитаз безободковый, белый", "location": "Уточнить цену у официального дилера Geberit", "qty": 1, "price": 98000, "link": ""},
+      {"article": "204060000", "name": "Geberit iCon — подвесовой унитаз безободковый, белый", "location": "Уточнить цену у официального дилера Geberit", "qty": 1, "price": 98000, "link": ""},
       {"article": "Sigma/Delta", "name": "Geberit — кнопка смыва (панель) для UP100", "location": "Подобрать хром или белый", "qty": 1, "price": 19600, "link": ""},
       {"article": "29232000", "name": "Hansgrohe 1jet S — гигиенический душ со смесителем, держателем и шлангом 125 см, хром", "location": "Рядом с унитазом; Заказ на Kaspi Магазине", "qty": 1, "price": 42500, "link": ""}
     ]
@@ -253,7 +553,7 @@ function updateStats() {
     });
   });
 
-  document.getElementById('stat-progress').textContent = `${doneCount} / ${totalCount}`;
+  document.getElementById('stat-progress').textContent = doneCount + " / " + totalCount;
   document.getElementById('stat-sum').textContent = fmt(runningSum);
 }
 
@@ -298,12 +598,12 @@ function renderList(filter) {
       const note = getNote(item.article);
 
       const itemEl = document.createElement('div');
-      itemEl.className = `item ${isDone ? 'done' : ''}`;
-      itemEl.id = `item-${item.article}`;
+      itemEl.className = 'item' + (isDone ? ' done' : '');
+      itemEl.id = 'item-' + item.article;
 
       let linkHtml = '';
       if (item.link) {
-        linkHtml = `<a href="${item.link}" target="_blank" class="link-btn">🔗 Ссылка на товар</a>`;
+        linkHtml = '<a href="' + item.link + '" target="_blank" class="link-btn">🔗 Ссылка на товар</a>';
       }
 
       itemEl.innerHTML = `
@@ -358,18 +658,18 @@ function renderList(filter) {
 }
 
 function toggleDetails(art) {
-  const det = document.getElementById(`det-${art}`);
+  const det = document.getElementById('det-' + art);
   if (!det) return;
   const open = det.classList.contains('open');
   det.classList.toggle('open', !open);
-  document.getElementById(`chv-${art}`).style.transform = open ? '' : 'rotate(180deg)';
+  document.getElementById('chv-' + art).style.transform = open ? '' : 'rotate(180deg)';
 }
 
 function livePrice(art, val, qty) {
   const p = parseInt(val) || 0;
-  const el = document.getElementById(`ptot-${art}`);
+  const el = document.getElementById('ptot-' + art);
   if (el) el.textContent = 'Итого: ' + fmt(p * qty) + ' за ' + qty;
-  const tot = document.getElementById(`dtot-${art}`);
+  const tot = document.getElementById('dtot-' + art);
   if (tot) tot.textContent = fmt(p * qty);
   updateStats();
 }
@@ -386,10 +686,10 @@ function resetPrice(art, def) {
   renderList(activeFilter);
 }
 
-document.getElementById('tabs').addEventListener('click', e => {
+document.getElementById('tabs').addEventListener('click', function(e) {
   const tab = e.target.closest('.tab');
   if (!tab) return;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
   tab.classList.add('active');
   renderList(tab.dataset.filter);
 });
@@ -397,21 +697,22 @@ document.getElementById('tabs').addEventListener('click', e => {
 initStorage();
 renderList('all');
 
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').then(reg=>{
-    reg.addEventListener('updatefound',()=>{
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(function(reg) {
+    reg.addEventListener('updatefound', function() {
       let newWorker = reg.installing;
       if (newWorker) {
-        newWorker.addEventListener('statechange',()=>{
-          if(newWorker.state==='installed' && navigator.serviceWorker.controller)
-            document.getElementById('updateBanner').style.display='block';
+        newWorker.addEventListener('statechange', function() {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            document.getElementById('updateBanner').style.display = 'block';
+          }
         });
       }
     });
   });
-  document.getElementById('updateBanner').addEventListener('click',()=>{
+  document.getElementById('updateBanner').addEventListener('click', function() {
     if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.getRegistration().then(reg => {
+      navigator.serviceWorker.getRegistration().then(function(reg) {
         if (reg && reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
       });
     }
